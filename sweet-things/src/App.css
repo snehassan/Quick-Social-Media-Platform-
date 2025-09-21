@@ -36,3 +36,138 @@
     transform: rotate(360deg);
   }
 }
+
+.flip-card {
+  background: transparent;
+  width: 100%;
+  height: 300px;          /* make all cards same height */
+  perspective: 1000px;
+  cursor: pointer;
+}
+
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+
+.flip-card.flipped .flip-card-inner {
+  transform: rotateY(180deg);
+}
+
+.flip-card-front,
+.flip-card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  border-radius: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.flip-card-front {
+  background: #fff0f5; /* soft pink */
+  font-weight: bold;
+  font-size: 18px;
+  color: #e91e63;
+}
+
+.flip-card-back {
+  background: white;
+  transform: rotateY(180deg);
+  flex-direction: column;
+}
+
+.custom-toolbar {
+  --background: #fff;
+  --color: #e91e63;
+}
+
+.toolbar-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;   /* allow wrapping */
+  width: 100%;
+  padding: 8px;
+}
+
+.app-title {
+  font-weight: bold;
+  color: #e91e63;
+  flex: 1 1 auto;
+}
+
+.toolbar-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.add-btn {
+  --background: #e91e63;
+  --color: #fff;
+  border-radius: 10px;
+}
+
+.logout-btn {
+  --border-color: #e91e63;
+  --color: #e91e63;
+  --background: #fff5f7;
+  border-radius: 20px;
+  font-weight: 500;
+}
+.logout-btn:hover {
+  --background: #ffe4eb;
+}
+
+/* 📱 On small screens, stack buttons under title */
+/* @media (max-width: 480px) {
+  .toolbar-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .toolbar-buttons {
+    margin-top: 8px;
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .toolbar-buttons ion-button {
+    flex: 1;
+  }
+} */
+
+.header-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.desktop-only {
+  display: inline-flex;
+}
+.mobile-only {
+  display: none;
+}
+
+@media (max-width: 480px) {
+  .desktop-only {
+    display: none !important;
+  }
+  .mobile-only {
+    display: inline-flex !important;
+  }
+}
+
+
+
+

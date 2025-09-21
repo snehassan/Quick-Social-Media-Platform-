@@ -6,6 +6,9 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import confetti from "canvas-confetti";
 import { supabase } from "./supabase";
 import Auth from "./Auth";
+import "./App.css";
+import { addOutline, logOutOutline } from "ionicons/icons";
+
 
 
 
@@ -114,47 +117,60 @@ export default function App() {
       <IonApp>
         {/* Header */}
         <IonHeader>
-      <IonToolbar
-        style={{
-          "--background": "#fff",
-          "--color": "#e91e63", // pink accent
-        }}
-      >
-        <IonTitle
-          className="ion-text-start"
-          style={{ fontWeight: "bold", color: "#e91e63" }}
-        >
-          Just Sky Things
-        </IonTitle>
-        <IonButtons slot="end">
-          <IonButton
+          <IonToolbar
             style={{
-              "--background": "#e91e63",
-              "--color": "#fff",
-              borderRadius: "10px",
-              marginRight: "8px",
+              "--background": "#fff",
+              "--color": "#e91e63", // pink accent
             }}
-            onClick={() => setShowModal(true)}
           >
-            Add New Entry
-          </IonButton>
-          <IonButton
-            style={{
-              "--color": "#e91e63",
-              border: "1px solid #e91e63",
-              borderRadius: "20px",
-              background: "#fff5f7",
-            }}
-            onClick={handleLogout}
-          >
-            Logout
-          </IonButton>
-        </IonButtons>
-      </IonToolbar>
-    </IonHeader>
+            <IonTitle
+              className="ion-text-start"
+              style={{ fontWeight: "bold", color: "#e91e63" }}
+            >
+              Just Sky Things
+            </IonTitle>
+
+            <IonButtons slot="end" className="header-buttons">
+              {/* Desktop buttons */}
+              <IonButton
+                className="desktop-only"
+                style={{
+                  "--background": "#e91e63",
+                  "--color": "#fff",
+                  borderRadius: "10px",
+                  marginRight: "8px",
+                }}
+                onClick={() => setShowModal(true)}
+              >
+                Add New Entry
+              </IonButton>
+              <IonButton
+                className="desktop-only"
+                style={{
+                  "--color": "#e91e63",
+                  border: "1px solid #e91e63",
+                  borderRadius: "20px",
+                  background: "#fff5f7",
+                }}
+                onClick={handleLogout}
+              >
+                Logout
+              </IonButton>
+
+              {/* Mobile buttons (icons) */}
+              <IonButton className="mobile-only" onClick={() => setShowModal(true)}>
+                <IonIcon icon={addOutline} />
+              </IonButton>
+              <IonButton className="mobile-only" onClick={handleLogout}>
+                <IonIcon icon={logOutOutline} />
+              </IonButton>
+            </IonButtons>
+          </IonToolbar>
+
+        </IonHeader>
 
         <IonContent className="ion-padding"
-        style={{ "--background": "#fff5f7" }}>
+          style={{ "--background": "#fff5f7" }}>
           {/* Search + Filters */}
           <IonItem lines="none" className="search-bar">
             <IonInput
@@ -178,56 +194,71 @@ export default function App() {
             <IonRow>
               {filteredEntries.map((entry) => (
                 <IonCol size="12" sizeSm="6" sizeMd="4" key={entry.id}>
-                  <IonCard
-                    onClick={() => setSelectedEntry(entry)}
-                    style={{
-                      borderRadius: "16px",
-                      overflow: "hidden",
-                      boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
-                      transition: "transform 0.2s ease",
-                      cursor: "pointer"
+                  <div
+                    className={`flip-card ${entry.flipped ? "flipped" : ""}`}
+                    onClick={() => {
+                      if (!entry.flipped) {
+                        confetti(); // 🎉 only first flip
+                      }
+                      setEntries((prev) =>
+                        prev.map((e) =>
+                          e.id === entry.id ? { ...e, flipped: !e.flipped } : e
+                        )
+                      );
                     }}
                   >
-                    {/* Photo */}
-                    {entry.photoUrl && (
-                      <img
-                        src={entry.photoUrl}
-                        alt={entry.title}
-                        style={{
-                          width: "100%",
-                          height: "180px",
-                          objectFit: "cover",
-                        }}
-                      />
-                    )}
-
-                    {/* Text Content */}
-                    <IonCardHeader
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                      }}
-                    >
-                      <div>
-                        <IonCardTitle>{entry.title}</IonCardTitle>
-                        <p style={{ color: "gray", fontSize: "14px", marginTop: "4px" }}>
-                          {entry.description}
-                        </p>
+                    <div className="flip-card-inner">
+                      {/* FRONT (plain message only) */}
+                      <div className="flip-card-front">
+                        💖 Click to Reveal
                       </div>
 
-                      <IonButton
-                        onClick={() => addHeart(entry.id, entry.hearts)}
-                        fill="clear"
-                        color="danger"
-                        style={{ fontSize: "18px" }}
-                      >
-                        ❤️ {entry.hearts}
-                      </IonButton>
-                    </IonCardHeader>
+                      {/* BACK (show image + details) */}
+                      <div className="flip-card-back">
+                        {entry.photoUrl && (
+                          <img
+                            src={entry.photoUrl}
+                            alt={entry.title}
+                            style={{
+                              width: "100%",
+                              height: "120px",
+                              objectFit: "cover",
+                              borderRadius: "12px",
+                              marginBottom: "8px",
+                            }}
+                            onClick={(e) => {
+                              e.stopPropagation(); // prevent re-flip
+                              setSelectedEntry(entry); // open modal
+                            }}
+                          />
+                        )}
+                        <h3 style={{ margin: "4px 0" }}>{entry.title}</h3>
+                        <p
+                          style={{
+                            fontSize: "14px",
+                            color: "gray",
+                            textAlign: "center",
+                          }}
+                        >
+                          {entry.description}
+                        </p>
+                        <IonButton
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            addHeart(entry.id, entry.hearts);
+                          }}
+                          fill="clear"
+                          style={{ color: "#e91e63", fontSize: "18px", marginBottom: "15px" }}
+                        >
+                          ❤️ {entry.hearts}
+                        </IonButton>
+                      </div>
+                    </div>
+                  </div>
 
-                  </IonCard>
                 </IonCol>
+
+
               ))}
             </IonRow>
           </IonGrid>
